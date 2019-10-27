@@ -7,7 +7,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
@@ -16,18 +18,24 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class Decrypter {
     private static final String initVector = "encryptionIntVec";
+    private static final int SECRET_KEY_LENGTH = 128;
 
     public static File decrypt(String filePath, String secretKey, String privateKey) throws Exception {
-        byte[] encryptedSecretKey = Base64.getDecoder().decode(secretKey);
-        byte[] decSecKey = decryptSecretKey(encryptedSecretKey,privateKey);
-
+//        byte[] encryptedSecretKey = Base64.getDecoder().decode(secretKey);
 
         File encryptedFile = new File(filePath);
-        byte[] decFileBytes = decryptFileData(encryptedFile,decSecKey);
+        InputStream input = new FileInputStream(encryptedFile);
+
+        byte[] encryptedSecretKeyArr = new byte[SECRET_KEY_LENGTH];
+        input.read(encryptedSecretKeyArr, 0, encryptedSecretKeyArr.length);
+        byte[] decSecKey = decryptSecretKey(encryptedSecretKeyArr,privateKey);
+
+        byte[] decFileBytes = decryptFileData(Arrays.copyOfRange(Files.readAllBytes(encryptedFile.toPath()),SECRET_KEY_LENGTH,Files.readAllBytes(encryptedFile.toPath()).length),decSecKey);
         Path decryptedFile = Files.write(new File(filePath).toPath(), decFileBytes);
         return decryptedFile.toFile();
     }
@@ -46,10 +54,10 @@ public class Decrypter {
         return decryptedKeyBytes;
     }
 
-    public static  byte[] decryptFileData(File file, byte[] secretKeyBytes) throws Exception {
+    public static  byte[] decryptFileData(byte[] file, byte[] secretKeyBytes) throws Exception {
         byte[] decryptedFileBytes = null;
         try {
-            byte [] fileByteArr=Files.readAllBytes(file.toPath());
+            byte [] fileByteArr=file;
 
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(secretKeyBytes, "AES");
