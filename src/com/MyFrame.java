@@ -80,7 +80,7 @@ public class MyFrame extends JFrame {
         c.weightx = 0.0;
         c.gridwidth = 1;
         c.gridx = 2;
-        c.gridy = 2;
+        c.gridy = 1;
         controlPanel.add(startButton,c);
 
         startButton.addActionListener(new java.awt.event.ActionListener(){
@@ -117,7 +117,6 @@ public class MyFrame extends JFrame {
 
         fileChooser = new JFileChooser(".");
         fileChooser.setControlButtonsAreShown(false);
-        input1 = new JTextField(80);
         input2 =  new JTextField(200);
         input3 =  new JTextField(600);
         fileButton = new JButton("Choose File");
@@ -131,15 +130,10 @@ public class MyFrame extends JFrame {
         c.gridy = 0;
         panel.add(new JLabel("File"), c);
 
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 0.5;
-        c.gridx = 1;
-        c.gridy = 0;
-        panel.add(new JLabel("Encrypted Secret Key"), c);
 
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
-        c.gridx = 2;
+        c.gridx = 1;
         c.gridy = 0;
         panel.add(new JLabel("Private Key"), c);
 
@@ -153,12 +147,6 @@ public class MyFrame extends JFrame {
         c.weightx = 0.5;
         c.gridx = 1;
         c.gridy = 1;
-        panel.add(input1, c);
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 0.5;
-        c.gridx = 2;
-        c.gridy = 1;
         panel.add(input2, c);
 
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -171,12 +159,11 @@ public class MyFrame extends JFrame {
     }
 
     private void inputsProcessing() throws Exception {
-        String secretKey= input1.getText();
         String privateKey= input2.getText();
         String filePath = input3.getText();
 
         fileSaver = new JFileChooser();
-        File file = Decrypter.decrypt(filePath,secretKey,privateKey);
+        File file = Decrypter.decrypt(filePath,privateKey);
 
         JOptionPane.showMessageDialog(null, "File was decrypted and replaced with the original version");
     }

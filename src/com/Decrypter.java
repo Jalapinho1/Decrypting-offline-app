@@ -25,8 +25,7 @@ public class Decrypter {
     private static final String initVector = "encryptionIntVec";
     private static final int SECRET_KEY_LENGTH = 128;
 
-    public static File decrypt(String filePath, String secretKey, String privateKey) throws Exception {
-//        byte[] encryptedSecretKey = Base64.getDecoder().decode(secretKey);
+    public static File decrypt(String filePath, String privateKey) throws Exception {
 
         File encryptedFile = new File(filePath);
         InputStream input = new FileInputStream(encryptedFile);
